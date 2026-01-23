@@ -11,17 +11,34 @@ DEFAULT_COMPRESSION_LEVEL = 9
 
 ADPCM_BLOCK_SIZE = 16
 
-SILENT_MIDBLOCK = b"\x0C\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-SILENT_ENDBLOCK = b"\x00\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+ADPCM_SPU_IRQ_CLEAR_BLOCK = \
+  b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+
+ADPCM_ANTIFREERUN_BLOCKS = [
+  b"\x00\x07\x77\x77\x77\x77\x77\x77\x77\x77\x77\x77\x77\x77\x77\x77",
+  b"\x00\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+]
 
 def silence_sample(buf, ofs, size):
-  start = ofs + ADPCM_BLOCK_SIZE # don't touch first block; should be all zero
-  end = ofs + size - ADPCM_BLOCK_SIZE
-  middle_size = end - start
-  if middle_size >= ADPCM_BLOCK_SIZE:
-    num_blocks = middle_size // ADPCM_BLOCK_SIZE
-    buf[start:end] = SILENT_MIDBLOCK * num_blocks
-  buf[end:end+ADPCM_BLOCK_SIZE] = SILENT_ENDBLOCK
+  # PS2 ADPCM flags/parameters must be treated delicately;
+  # not doing so can break playback in unpredictable ways.
+  # Retrieve original decoding data
+  new_shift_pidx = b"\x0C" * (size // ADPCM_BLOCK_SIZE)
+  original_flags = buf[ofs+0x01 : ofs+size : ADPCM_BLOCK_SIZE]
+  last_block = buf[ofs + size - ADPCM_BLOCK_SIZE : ofs + size]
+  # Create zero-initialized sample buffer
+  new_sample_data = bytearray(size)
+  # Set predict_index=0, shift_factor=0xC for all blocks
+  new_sample_data[0x00::ADPCM_BLOCK_SIZE] = new_shift_pidx
+  # Maintain all original flags exactly
+  new_sample_data[0x01::ADPCM_BLOCK_SIZE] = original_flags
+  # First block must be all zeros (SPU IRQ Clear block)
+  new_sample_data[:ADPCM_BLOCK_SIZE] = ADPCM_SPU_IRQ_CLEAR_BLOCK
+  # Also maintain anti-freerun blocks at end exactly as-is
+  if last_block in ADPCM_ANTIFREERUN_BLOCKS:
+    new_sample_data[-len(last_block):] = last_block
+  # Overwrite original sample
+  buf[ofs : ofs + size] = new_sample_data
 
 def get_u32_le(b, off=0):
   return int.from_bytes(b[off:off+4], "little", signed=False)
@@ -493,4 +510,5 @@ def main(argc=len(sys.argv), argv=sys.argv):
 if __name__ == "__main__":
 
   main()
+
 
