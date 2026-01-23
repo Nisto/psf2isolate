@@ -262,7 +262,7 @@ def psf2load(psf2_path, out_root, tags={}, islib=False):
 
   return tags
 
-def get_module_arguments(ini_path, include_variations=True):
+def get_module_arguments(ini_path):
   module_arguments = []
 
   with open(ini_path, "r") as f:
@@ -489,4 +489,5 @@ def main(argc=len(sys.argv), argv=sys.argv):
   return 0
 
 if __name__ == "__main__":
+
   main()
