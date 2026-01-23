@@ -5,7 +5,34 @@ For isolating PSF1 files, see [psfisolate](https://github.com/Nisto/psfisolate).
 
 ## Usage
 
-On systems where supported, you can simply drag-n-drop a PSF2 file onto the script. If not, pass a mini/PSF2 via CLI (command-line).
+*On systems where supported, you can simply* ***drag-n-drop a PSF2 file onto the script***. Otherwise, pass a file via terminal, e.g.:
+
+```sh
+python3 psf2isolate.py bgm_123.minipsf2
+python3 psf2isolate.py town_theme.psf2
+```
+
+**NOTE:** If a mini/PSF2 loads its soundbank from a shared filesystem (e.g. a psf2lib), you may be prompted to confirm/enter which soundbank to target. In such cases, a best guess ("default") may be provided; if the names are correct you may simply press Enter (leave blank) to proceed with the suggested names. Example:
+
+```txt
+* Loading PSF2...
+
+* Loaded PSF2 virtual filesystem:
+  BGM50000.BD
+  BGM50000.HD
+  < +151 more files >
+  libsd.irx
+  psf2.irx
+
+* Multiple HD/BD soundbank files detected - confirm names:
+  HD [default: BGM50123.HD]:
+  BD [default: BGM50123.BD]:
+
+* Writing psf2lib to: ...
+* Writing minipsf2 for isolated sample 0 to: ...
+* Writing minipsf2 for isolated sample 1 to: ...
+* Writing minipsf2 for isolated sample 2 to: ...
+```
 
 ## Limitations
 
@@ -14,7 +41,10 @@ As this is still in an early stage of development, for now only standard Sony (S
 ## FAQ
 
 #### Q: Some output PSFs are completely silent or contain gaps?
-**A:** There are numerous possible reasons for this. If only some of the files are silent, the game may use shared sound banks, where the song only uses some of the samples (please understand that the tool has no knowledge of which samples are actually used). Also, if the soundbank contains a multi-sample instrument that is being played, only some of the samples may actually be triggered by the music sequence. If there appears to be "gaps", it's most likely because different notes trigger different samples within the same instrument. It's important to note the distinction between **samples** and *instruments*.
+**A:** Please know that the tool has no knowledge of which samples are (un)used. So there are numerous possible reasons for this, not limited to:
+1. The input file/game may use shared soundbanks, some of which may only be used for other music sequences
+2. The sample is part of a multi-sample instrument (e.g. piano, guitar, etc.) and only some of the samples are triggered by the music sequence
+3. The tool has a bug (least likely as most bugs have been found and fixed)
 
 ## Support ❤️
 
