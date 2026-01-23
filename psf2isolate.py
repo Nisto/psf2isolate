@@ -473,6 +473,7 @@ def main(argc=len(sys.argv), argv=sys.argv):
         # Overwrite silent sample data with real sample data
         f.seek(sample_offset)
         f.write(bd_data[sample_offset:sample_offset+sample_sizes[i]])
+        f.flush()
 
         # Create miniPSF2
         minipsf2_name = "%s_sample_%d.minipsf2" % (psf2_rootname, i)
@@ -483,6 +484,7 @@ def main(argc=len(sys.argv), argv=sys.argv):
         # Overwrite real sample data with silent sample data again
         f.seek(sample_offset)
         f.write(silent_bd_data[sample_offset:sample_offset+sample_sizes[i]])
+        f.flush()
 
   input("\nDone! Press Enter to exit")
 
@@ -491,3 +493,4 @@ def main(argc=len(sys.argv), argv=sys.argv):
 if __name__ == "__main__":
 
   main()
+
