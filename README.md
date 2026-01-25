@@ -40,11 +40,13 @@ As this is still in an early stage of development, for now only standard Sony (S
 
 ## FAQ
 
-#### Q: Some output PSFs are completely silent or contain gaps?
-**A:** Please know that the tool has no knowledge of which samples are (un)used. So there are numerous possible reasons for this, not limited to:
-1. The input file/game may use shared soundbanks, some of which may only be used for other music sequences
+#### Q: Some output PSFs are completely silent, missing audio or contain gaps?
+**A:** There are numerous possible reasons for this, not limited to:
+1. The sample is unused (please understand the tool has no knowledge of which samples are un-/used)
 2. The sample is part of a multi-sample instrument (e.g. piano, guitar, etc.) and only some of the samples are triggered by the music sequence
-3. The tool has a bug (least likely as most bugs have been found and fixed)
+3. The input file/game may use shared soundbanks, some of which may only be used for other music sequences
+4. Your PSF2 decoder erroneously removed audio (if you use HighlyExperimental, make sure to disable silence-suppression settings)
+5. The tool has a bug (least likely as most silencing/isolation bugs have been found and fixed)
 
 ## Support ❤️
 
