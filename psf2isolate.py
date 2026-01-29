@@ -2,6 +2,7 @@ import os
 import sys
 import zlib
 import tempfile
+import pathlib
 
 MAX_BLOCK_SIZE = 32768
 MAX_NAME_LEN = 36
@@ -204,7 +205,7 @@ def psf2_vfs_extract(base_path, reserved_data, ofs=0):
 
     # If U, B, and O are all zero, then the entry describes a zero-length file. In this case, there is no data.
     if U == 0 and B == 0 and O == 0:
-      os.touch(path)
+      pathlib.Path(path).touch()
     # If U and B are zero and O is nonzero, the entry describes a subdirectory.
     elif U == 0 and B == 0 and O != 0:
       os.makedirs(path, exist_ok=True)
@@ -508,7 +509,4 @@ def main(argc=len(sys.argv), argv=sys.argv):
   return 0
 
 if __name__ == "__main__":
-
   main()
-
-
